@@ -23,7 +23,7 @@ public class Guest {
         interestingFact2 = guestInterestingFact2;
     }
 
-    public String getString() {
+    public String toString() {
         return String.format("%s, %s", interestingFact1, interestingFact2);
     }
 
