@@ -63,7 +63,7 @@ public class Rainbow extends JPanel
      * The delta between corresponding radii determines the ring width
      * 
      * 
-     * ((b-c) / 2) = ((a-b) / 2) + ((c-d) / 2)
+     * ((b-c) / 2) = (((a-b) / 2) + ((c-d) / 2)) / 2
      * Solve for d, such that a, b, c, d are the radii of the red, 
      *    green, magenta, and sky semi-circles respectively.
      * 
