@@ -4,7 +4,8 @@ package RainbowAssignment.src;
 /*
  * Modified by Aidan O'Quinn
  * October 28th, 2022
- * 
+*/
+/**
  * Creates a rainbow graphic by using instructions given in the textbook.
  * Draws four semi-circles, overlapping each other to create rings for
  * the rainbow.
