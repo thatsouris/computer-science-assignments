@@ -1,14 +1,9 @@
 /*
  * Aidan O'Quinn
  * October 23rd, 2022
- * 
- * The "Guest" class for creating making guests for the party.
- * @param String guestName : The full name of the guest.
- * @param String guestJob : The current (or last known) job of the guest.
- * @param String guestCareer : The desired life career of the guest.
- * @param int guestAge : How many years since the guest was born.
- * @param String guestInterestingFact1 : First fact about guest, used in dialogue.
- * @param String guestInterestingFact2 : Second fact about guest, used in dialogue.
+*/
+/** 
+ * The Guest class for creating making guests for the party.
  */
 
 public class Guest {
@@ -21,6 +16,15 @@ public class Guest {
 
     public Guest() {
     }
+
+    /**
+    * @param String guestName : The full name of the guest.
+    * @param String guestJob : The current (or last known) job of the guest.
+    * @param String guestCareer : The desired life career of the guest.
+    * @param int guestAge : How many years since the guest was born.
+    * @param String guestInterestingFact1 : First fact about guest, used in dialogue.
+    * @param String guestInterestingFact2 : Second fact about guest, used in dialogue.
+    */
 
     public Guest(String guestName,
             String guestJob,

@@ -9,6 +9,13 @@
 import java.util.ArrayList;
 
 public class DinnerParty {
+
+    /**
+     * Begins the conversation with all of the guests
+     * within the given arraylist.
+     * 
+     * @param guests The ArrayList, containing all of the guests for the dinner party.
+     */
     public static void startConversation(ArrayList<Guest> guests) {
         for (int i = 0; i < guests.size(); i++) {
             Guest guest = guests.get(i);
@@ -18,6 +25,9 @@ public class DinnerParty {
         }
     }
 
+    /**
+     * Inits all of the guest objects and begins a conversation.
+     */
     public static void main(String[] args) {
         ArrayList<Guest> guests = new ArrayList<Guest>();
         guests.add(new Guest(
