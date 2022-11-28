@@ -4,20 +4,37 @@ import java.util.HashMap;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
+import types.Mob;
+
+/*
+ * Elysia class
+ * The main class for the game. Includes all methods for the choices.
+ * 
+ * @author Aidan O'Quinn
+ *
+ */
+
 public class Elysia {
+	public static boolean searchArray(Object[] array, Object object) {
+		for(int i = 0; i < array.length; i++) {
+			if (array[i].equals(object)) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
 	private int Health = 100;
     private int MaxHealth = 100;
     private int Armor = 0;
     
+    private boolean hasTorch = false;
+    
     private Scanner scan = new Scanner(System.in);
     
     private String PlayerName;
-
-    private int Gold = 10;
-
-    private HashMap<String, Integer> Skills = new HashMap<String, Integer>();
-    private HashMap<String, Integer> Inventory = new HashMap<String, Integer>();
-	
+    
 	public Elysia() { }
 	
 	public static void speak(String name, String text) {
@@ -36,6 +53,12 @@ public class Elysia {
 		}
 		
 		System.out.println("\"\n");
+		
+		try {
+			TimeUnit.SECONDS.sleep(1);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public static void out(String str) {
@@ -43,6 +66,23 @@ public class Elysia {
 	}
 	
 	public void upgrade() {
+		
+	}
+	
+	public void GameOver(String deathMessage) {
+		System.out.println("  /$$$$$$   /$$$$$$  /$$      /$$ /$$$$$$$$        /$$$$$$  /$$    /$$ /$$$$$$$$ /$$$$$$$ \r\n"
+				+ " /$$__  $$ /$$__  $$| $$$    /$$$| $$_____/       /$$__  $$| $$   | $$| $$_____/| $$__  $$\r\n"
+				+ "| $$  \\__/| $$  \\ $$| $$$$  /$$$$| $$            | $$  \\ $$| $$   | $$| $$      | $$  \\ $$\r\n"
+				+ "| $$ /$$$$| $$$$$$$$| $$ $$/$$ $$| $$$$$         | $$  | $$|  $$ / $$/| $$$$$   | $$$$$$$/\r\n"
+				+ "| $$|_  $$| $$__  $$| $$  $$$| $$| $$__/         | $$  | $$ \\  $$ $$/ | $$__/   | $$__  $$\r\n"
+				+ "| $$  \\ $$| $$  | $$| $$\\  $ | $$| $$            | $$  | $$  \\  $$$/  | $$      | $$  \\ $$\r\n"
+				+ "|  $$$$$$/| $$  | $$| $$ \\/  | $$| $$$$$$$$      |  $$$$$$/   \\  $/   | $$$$$$$$| $$  | $$\r\n"
+				+ " \\______/ |__/  |__/|__/     |__/|________/       \\______/     \\_/    |________/|__/  |__/\r\n"
+				+ "                                                                                          \r\n"
+				+ "                                                                                          \r\n"
+				+ "                                                                                          ");
+		
+		System.out.println("\n\n"+deathMessage);
 		
 	}
 	
@@ -56,6 +96,22 @@ public class Elysia {
 		}
 		
 		while (entry.length() != 1) {
+			out("Not a valid command!");
+		}
+		
+		return entry;
+	}
+	
+	public String promptUser(String[] args) {
+		System.out.print(">> ");
+		String entry = scan.next();
+		entry = entry.toLowerCase();
+		
+		if (entry == "upgrade") {
+			upgrade();
+		}
+		
+		while (entry.length() != 1 || !searchArray(args, entry)) {
 			out("Not a valid command!");
 		}
 		
@@ -83,23 +139,170 @@ public class Elysia {
 	}
 	
 	public void Shop() {
-		speak("shopkeeper", "Welcome back, " + PlayerName + ". Do you need something soldier?");
-		out("Enter [t] to talk to the shopkeeper or enter [b] to buy things");
+		out("You push the wooden door inwards and it scraps across the floor. You hear a bell directly above you and then you hear footsteps walking towards the desk.");
+		speak("shopkeeper", "Welcome back " + PlayerName + "! Do you need something, soldier?");
+		out("Enter [t] to talk to the shopkeeper");
 		String entry = promptUser();
 		
 		switch(entry) {
 			case "t":
 				speak(PlayerName, "What's on your mind?");
-				speak("shopkeeper", "Hmm, well not much happens these days other then the typical goblin attack. ")
+				speak("shopkeeper", "Hmm, well not much happens these days other then the typical goblin attack. ");
+				out("[2] > Goblin attacks? What do you mean?");
+				out("[1] > Goodbye.");
+				String[] options1 = {"2", "1"};
+				String p_1 = promptUser(options1);
+				
+				switch(p_1) {
+				case "2":
+					speak(PlayerName, "Goblin attacks? What do you mean");
+					speak("shopkeeper", "Oh yes. The goblins come around quite often to steal my things.");
+					speak("shopkeeper", "Those pesky things. I really hope something is done about it.");
+					
+					out("[2] > What do these goblins look like?");
+					out("[1] > Oh okay then. I'll see you later.");
+					
+					String[] options2 = {"2", "1"};
+					String p_2 = promptUser(options2);
+					
+					switch(p_2) {
+					case "2":
+						speak(PlayerName, "What do these goblins look like?");
+						speak("shopkeeper", "Hmm. Last time I saw one they looked like us but they were much shorter. They have pointy ears and a screechy voice.");
+						
+						out("[2] > Okay, where did you last see them?");
+						out("[1] > Okay, I'll keep an eye out!");
+						
+						String[] options3 = {"2", "1"};
+						String p_3 = promptUser(options3);
+						
+						switch(p_3) {
+						case "2":
+							speak(PlayerName, "Okay, where did you last see them?");
+							speak("shopkeeper", "Well, I last saw them down towards the roofed forest a quite aways from here. It gets pretty dark there at night!");
+							speak(PlayerName, "Okay. I'll see what I can do.");
+							speak("shopkeeper", "You would be doing me a HUGE favor! Thank you " + PlayerName + "!");
+							speak(PlayerName, "No problem.");
+							break;
+						case "1":
+							speak(PlayerName, "[1] > Okay, I'll keep an eye out!");
+							speak("shopkeeper", "Hey! Make sure you show em' whos boss!");
+							break;
+						}
+						
+						break;
+					case "1":
+						break;
+					}
+						
+					
+					break;
+				case "1":
+					break;
+				}
+			
 		}
+		
+		speak("shopkeeper", "Later gator!");
+		out("You shut the door behind you and you hear the bell ring from the inside as your do.");
+		Town();
 	}
 	
 	public void Wilderness() {
+		out("You walk into the wilderness, straying from your home town. You hear the bushes rustle from the"+ 
+			"wind and you feel the cool air blowing on you. You are surrounded by tall trees and before you is"+
+			" a pathway that is seemingly endless.");
 		
+		out("Should you... [b]egin to walk or [g]o back to your town?");
+		
+		String[] options1 = {"b", "g"};
+		String p_1 = promptUser(options1);
+		
+		switch(p_1) {
+			case "b":
+				out("The sun sets from behind you and you start seeing less. You really should have went earlier. This is going to be "+
+			"a longgg trip!");
+				System.out.print(">> Hours go by of walking");
+				for (int i = 0; i < 6; i++) {
+					System.out.print(".");
+					try {
+						TimeUnit.SECONDS.sleep(1);
+					} catch(InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+				System.out.println();
+				
+				
+				out("You see the path split into two. On one side you see a [d]arkened area with low roofing trees and on the other side"+
+				" you see a pathway that begins to go downhill towards a [r]iver. Where do you go?");
+				out("You also see a sign directly beside the darkened path. \"DO NOT ENTER WHILE DARK!\"");
+				
+				String[] options2 = {"r", "d"};
+				String p_2 = promptUser(options2);
+				
+				switch(p_2) {
+				case "r":
+					
+					break;
+				case "d":
+					if (hasTorch == true) {
+						
+					} else {
+						out("You scoff at the sign and ignore it. You walk into the forest and you can't even see your boots. You begin to think that this may"+
+					" be a bad idea but you ignore your ideas and keep onward.");
+						
+						System.out.print(">> You keep walking.");
+						for (int i = 0; i < 6; i++) {
+							System.out.print(".");
+							try {
+								TimeUnit.SECONDS.sleep(1);
+							} catch(InterruptedException e) {
+								e.printStackTrace();
+							}
+						}
+						System.out.println();
+						
+						out("And all of the sudden, you feel a tap from behind you.");
+						out("You look quickly. You can't see a thing");
+						speak(PlayerName, "Who's there!?");
+						out("You should think carefully of your next action.");
+						out("Should you... look [t]owards you, or take out your [s]word and blindly jab around you.");
+						
+						String[] options3 = {"t", "s"};
+						String p_3 = promptUser(options3);
+						
+						switch(p_3) {
+						case "t":
+							out("You quickly look in front of you again and nothing is there.");
+							out("You hear a high pitched voice.");
+							
+							speak("???", "Loser!");
+							out("You get swung at with a bat and you die instantly");
+							break;
+						case "s":
+							out("You equip your sword and you start swinging at the air. You get pushed from behind you onto the ground.");
+							out("You get kicked from all around you and then you get hit with a bat. You die instantly.");
+							break;
+						}
+						
+						GameOver("It was a bad idea to disregard signs.");
+					}
+					break;
+				}
+				
+				break;
+			case "g":
+				out("You look behind you. Unknown to yourself, the gate is already shut! There is no going back. You must venture "+
+						"forth.");
+				Wilderness();
+				break;
+		}
 	}
 	
 	public void Town() {
-		out("You look around you. You see a shop [s], your house [h], and the wilderness [w]. Where should you venture to?");
+		out("You look around you. You see a [s]hop, your [h]ouse, and the [w]ilderness. Where should you venture to?");
+		out("NOTE: Once you leave your town, you can't come back! You should prepare before you leave.");
 		String entry = promptUser();
 		
 		switch(entry) {
@@ -107,8 +310,8 @@ public class Elysia {
 				Shop();
 				break;
 			case "h":
-				out("You rest and replenish all of your health!");
-				Health = MaxHealth;
+				out("You decided to take a small nap before you leave. Your armor is now at one point!");
+				Armor = 1;
 				Town();
 				break;
 			case "w":
