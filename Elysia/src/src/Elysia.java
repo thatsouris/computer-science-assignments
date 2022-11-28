@@ -24,9 +24,12 @@ public class Elysia {
 		return false;
 	}
 	
-	private int Health = 100;
-    private int MaxHealth = 100;
+	private int Health = 25;
+    private int MaxHealth = 25;
     private int Armor = 0;
+    private int damage = 1;
+    
+    private int SkillPoints = 0;
     
     private boolean isAttacking = false;
     private boolean firstTimeAttacking = true;
@@ -54,6 +57,9 @@ public class Elysia {
 		boolean playersTurn = !mobAttackedFirst;
 		
 		while(mob.getHealth() != 0 && Health != 0) {
+			System.out.println("[ "+PlayerName+" ] - " + Health + "/" + MaxHealth);
+			System.out.println("[ "+mob+" ] - " + mob.getHealth() + "/" + mob.getMaxHealth());
+			
 			if(playersTurn == true) {
 				out("It's your turn to attack!");
 				out("Type [A] to turn the arrow CCW, [D] to turn CW, and [W] to attack!");
@@ -99,20 +105,51 @@ public class Elysia {
 						if (direction > 4) {
 							direction = 1;
 						}
+						break;
 					case "w":
+						sent = true;
 						if (direction == 3) {
 							boolean crit = ((int) (Math.random() * 100) + 1) <= 10;
+							if (crit == false) {
+								System.out.println("You hit " + mob + " for " + damage + " damage!");
+								mob.takeDamage(damage);
+							} else {
+								System.out.println("[CRITICAL] You hit " + mob + " for " + damage*2 + " damage!");
+								mob.takeDamage(damage*2);
+							}
 						} else {
 							out("You attacked and missed! (The arrow must be pointed upwards)");
 						}
-					
+						break;
 					}
 				}
 			} else {
+				try {
+					TimeUnit.SECONDS.sleep(1);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				System.out.println(mob+" swings at you! Dealing "+mob.getDamage() + " damage");
+				Health -= mob.getDamage();
+				try {
+					TimeUnit.SECONDS.sleep(1);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
 				
 			}
 			
 			playersTurn = !playersTurn;
+		}
+		
+		if (Health <= 0) {
+			GameOver("Next time try landing your hits!");
+			return;
+		}
+		
+		if (mob.getHealth() == 0) {
+			SkillPoints += mob.getReward();
+			out("You have won the battle and have been awarded " + mob.getReward() + " skill points!");
 		}
 		
 		isAttacking = false;
@@ -233,7 +270,7 @@ public class Elysia {
 		
 		System.out.println("-- WELCOME TO ELYSIA! --\n");
 		out("You are a young warrior and it is your birthday today! It is time for your to embark of \n" +
-		"your journey to become the DRAGON SLAYER. You have just turned 18 and with your trusty SWORD,\n" +
+		"your journey to slay the goblin clan! You have just turned 18 and with your trusty SWORD,\n" +
 		" you are prepared to take on any enemy!");
 		out("Select a name for your character \n>> ");
 		PlayerName = scan.next().toUpperCase();
@@ -243,7 +280,7 @@ public class Elysia {
 		out(PlayerName + "! You are at the center of town in ELYSIA. It is a heavily populated area with \n" +
 		"many districts. The sun is beginning to set in the distance. It is currently 912 CE in the summer.\n" +
 		"You see the buildings towering over you, creating shadows on top of you. On your waist, you have \n" +
-		"your basic sword, which deals 1 damage per hit.");
+		"your sword, which deals 1 damage per hit.");
 		out("You should probaly get somewhere safe before the sun sets. With that, time to get this journey\n" +
 		"started!\n");
 		
@@ -384,7 +421,7 @@ public class Elysia {
 						System.out.println();
 						
 						out("Suddenly, you see green eyes opposing you. You quickly unsheath you sword and point it towards it.");
-						Mob goblin = new Mob(10, 1, 1, "Frank", "the Rebal Goblin");
+						Mob goblin = new Mob(10, 1, 1, "Tarzan", "the Rebel Goblin");
 						attack(goblin, false);
 						
 					} else {

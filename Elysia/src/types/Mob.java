@@ -5,17 +5,23 @@ public class Mob {
 	private int MaxHealth = 100;
 	private int Armor = 0;
 	private int Damage = 0;
+	private int Reward = 0;
 	
 	private String Name;
 	private String Title;
 	
-	public Mob(int maxHealth, int armor, int dmg, String name, String title) {
+	public Mob(int maxHealth, int armor, int dmg, String name, String title, int reward) {
 		MaxHealth = maxHealth;
 		Health = MaxHealth;
 		Armor = armor;
 		Damage = dmg;
 		Name = name;
 		Title = title;
+		Reward = reward;
+	}
+	
+	public int getReward() {
+		return Reward;
 	}
 	
 	public int getDamage() {
