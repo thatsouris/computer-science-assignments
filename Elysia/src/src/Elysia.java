@@ -1,6 +1,5 @@
 package src;
 
-import java.util.HashMap;
 import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
 
@@ -29,13 +28,95 @@ public class Elysia {
     private int MaxHealth = 100;
     private int Armor = 0;
     
-    private boolean hasTorch = false;
+    private boolean isAttacking = false;
+    private boolean firstTimeAttacking = true;
+    private boolean hasTorch = true;
     
     private Scanner scan = new Scanner(System.in);
     
     private String PlayerName;
-    
+    	
 	public Elysia() { }
+	
+	public void attack(Mob mob, boolean mobAttackedFirst) {
+		isAttacking = true;
+		System.out.println("--- BATTLE ! ---");
+		out("Attacking: " + mob);
+		if (firstTimeAttacking = true) {
+			firstTimeAttacking = false;
+			out("To attack, you must rotate the arrow by using [A] for counter-clockwise and [D] for clockwise!");
+			out("The arrow needs to be pointing upwards [↑] and you type [W] to attack!");
+			out("Each one of your attacks has a 10% chance to be a critical hit (x2 damage)");
+			out("This is turn-based combat, meaning that you and your attackee switches turns to attack.");
+		}
+		System.out.println();
+		
+		boolean playersTurn = !mobAttackedFirst;
+		
+		while(mob.getHealth() != 0 && Health != 0) {
+			if(playersTurn == true) {
+				out("It's your turn to attack!");
+				out("Type [A] to turn the arrow CCW, [D] to turn CW, and [W] to attack!");
+				
+				int direction = (int) (Math.random() * 4d) + 1;
+				boolean sent = false;
+				
+				while(sent == false) {
+					String arrow;
+					switch(direction) {
+						case 1:
+							arrow = "\\/";
+							break;
+						case 2:
+							arrow = ">";
+							break;
+						case 3:
+							arrow = "^";
+							break;
+						case 4:
+							arrow = "<";
+							break;
+						default:
+							arrow = "";
+							break;
+					}
+					
+					System.out.println("-- [ "+arrow+" ] --");
+					
+					String[] options = {"d", "a", "w"};
+					String entry = promptUser(options);
+					
+					switch(entry) {
+					case "d":
+						direction -= 1;
+						if (direction < 1) {
+							direction = 4;
+						}
+						
+						break;
+					case "a":
+						direction += 1;
+						if (direction > 4) {
+							direction = 1;
+						}
+					case "w":
+						if (direction == 3) {
+							boolean crit = ((int) (Math.random() * 100) + 1) <= 10;
+						} else {
+							out("You attacked and missed! (The arrow must be pointed upwards)");
+						}
+					
+					}
+				}
+			} else {
+				
+			}
+			
+			playersTurn = !playersTurn;
+		}
+		
+		isAttacking = false;
+	}
 	
 	public static void speak(String name, String text) {
 		String[] split = text.split("");
@@ -92,11 +173,24 @@ public class Elysia {
 		entry = entry.toLowerCase();
 		
 		if (entry == "upgrade") {
+			if (isAttacking == true) {
+				out("You can't upgrade your skills while battling!");
+			}
 			upgrade();
 		}
 		
 		while (entry.length() != 1) {
 			out("Not a valid command!");
+			
+			entry = scan.next();
+			entry = entry.toLowerCase();
+			
+			if (entry == "upgrade") {
+				if (isAttacking == true) {
+					out("You can't upgrade your skills while battling!");
+				}
+				upgrade();
+			}
 		}
 		
 		return entry;
@@ -113,12 +207,30 @@ public class Elysia {
 		
 		while (entry.length() != 1 || !searchArray(args, entry)) {
 			out("Not a valid command!");
+			
+			entry = scan.next();
+			entry = entry.toLowerCase();
+			
+			if (entry == "upgrade") {
+				upgrade();
+			}
 		}
 		
 		return entry;
 	}
 	
 	public void BeginGame() {
+		System.out.println("\r\n"
+				+ " ________  _____   ____  ____   ______   _____       _       \r\n"
+				+ "|_   __  ||_   _| |_  _||_  _|.' ____ \\ |_   _|     / \\      \r\n"
+				+ "  | |_ \\_|  | |     \\ \\  / /  | (___ \\_|  | |      / _ \\     \r\n"
+				+ "  |  _| _   | |   _  \\ \\/ /    _.____`.   | |     / ___ \\    \r\n"
+				+ " _| |__/ | _| |__/ | _|  |_   | \\____) | _| |_  _/ /   \\ \\_  \r\n"
+				+ "|________||________||______|   \\______.'|_____||____| |____| \r\n"
+				+ "                                                             \r\n"
+				+ "-------------------------------------------------------------\r\n"
+				+ "\n\n");
+		
 		System.out.println("-- WELCOME TO ELYSIA! --\n");
 		out("You are a young warrior and it is your birthday today! It is time for your to embark of \n" +
 		"your journey to become the DRAGON SLAYER. You have just turned 18 and with your trusty SWORD,\n" +
@@ -180,6 +292,11 @@ public class Elysia {
 						case "2":
 							speak(PlayerName, "Okay, where did you last see them?");
 							speak("shopkeeper", "Well, I last saw them down towards the roofed forest a quite aways from here. It gets pretty dark there at night!");
+							if (hasTorch == false) {
+								speak("shopkeeper", "Take this torch if you want to head there tonight. It will help a lot!");
+								out("You have obtained a torch! You can now travel in dark spaces.");
+								hasTorch = true;
+							}
 							speak(PlayerName, "Okay. I'll see what I can do.");
 							speak("shopkeeper", "You would be doing me a HUGE favor! Thank you " + PlayerName + "!");
 							speak(PlayerName, "No problem.");
@@ -204,7 +321,7 @@ public class Elysia {
 		}
 		
 		speak("shopkeeper", "Later gator!");
-		out("You shut the door behind you and you hear the bell ring from the inside as your do.");
+		out("You shut the door behind you and you hear the bell ring from the inside as you do.");
 		Town();
 	}
 	
@@ -220,7 +337,7 @@ public class Elysia {
 		
 		switch(p_1) {
 			case "b":
-				out("The sun sets from behind you and you start seeing less. You really should have went earlier. This is going to be "+
+				out("The sun sets from behind you and you start seeing less. You really should have went earlier. This is going to be \n"+
 			"a longgg trip!");
 				System.out.print(">> Hours go by of walking");
 				for (int i = 0; i < 6; i++) {
@@ -234,7 +351,7 @@ public class Elysia {
 				System.out.println();
 				
 				
-				out("You see the path split into two. On one side you see a [d]arkened area with low roofing trees and on the other side"+
+				out("You see the path split into two. On one side you see a [d]arkened area with low roofing trees and on the other side\n"+
 				" you see a pathway that begins to go downhill towards a [r]iver. Where do you go?");
 				out("You also see a sign directly beside the darkened path. \"DO NOT ENTER WHILE DARK!\"");
 				
@@ -247,9 +364,31 @@ public class Elysia {
 					break;
 				case "d":
 					if (hasTorch == true) {
+						out("You remember that you were given a torch by that SHOPKEEPER! You take it out and strike it across the ground. It\n" +
+								" makes a loud spark sound and you can easily see now. You walk into the forest slowly.");
+						out("The forest looks to have many vines hanging down. The trees on both sides of you look to be maple trees. You hear \n" +
+							"the wind blowing above you, making a squeal but you never actually feel the wind.");
+						out("Feeling the torch next to you comforts you and improves you confidence for future battles. A point is added to your armor!");
+						Armor += 1;
+						
+						out("You continue to walk down the path.");
+						System.out.print(">> You keep walking.");
+						for (int i = 0; i < 6; i++) {
+							System.out.print(".");
+							try {
+								TimeUnit.SECONDS.sleep(1);
+							} catch(InterruptedException e) {
+								e.printStackTrace();
+							}
+						}
+						System.out.println();
+						
+						out("Suddenly, you see green eyes opposing you. You quickly unsheath you sword and point it towards it.");
+						Mob goblin = new Mob(10, 1, 1, "Frank", "the Rebal Goblin");
+						attack(goblin, false);
 						
 					} else {
-						out("You scoff at the sign and ignore it. You walk into the forest and you can't even see your boots. You begin to think that this may"+
+						out("You scoff at the sign and ignore it. You walk into the forest and you can't even see your boots. You begin to think that this may\n"+
 					" be a bad idea but you ignore your ideas and keep onward.");
 						
 						System.out.print(">> You keep walking.");
