@@ -48,7 +48,7 @@ public class Elysia {
 		if (firstTimeAttacking = true) {
 			firstTimeAttacking = false;
 			out("To attack, you must rotate the arrow by using [A] for counter-clockwise and [D] for clockwise!");
-			out("The arrow needs to be pointing upwards [↑] and you type [W] to attack!");
+			out("The arrow needs to be pointing upwards [^] and you type [W] to attack!");
 			out("Each one of your attacks has a 10% chance to be a critical hit (x2 damage)");
 			out("This is turn-based combat, meaning that you and your attackee switches turns to attack.");
 		}
@@ -111,10 +111,12 @@ public class Elysia {
 						if (direction == 3) {
 							boolean crit = ((int) (Math.random() * 100) + 1) <= 10;
 							if (crit == false) {
-								System.out.println("You hit " + mob + " for " + damage + " damage!");
+								int dmgTaken = Math.max(0, damage - mob.getArmor());
+								System.out.println("You hit " + mob + " for " + dmgTaken + " damage!");
 								mob.takeDamage(damage);
 							} else {
-								System.out.println("[CRITICAL] You hit " + mob + " for " + damage*2 + " damage!");
+								int dmgTaken = Math.max(0, damage - mob.getArmor());
+								System.out.println("[CRITICAL] You hit " + mob + " for " + dmgTaken*2 + " damage!");
 								mob.takeDamage(damage*2);
 							}
 						} else {
@@ -129,8 +131,9 @@ public class Elysia {
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				}
-				System.out.println(mob+" swings at you! Dealing "+mob.getDamage() + " damage");
-				Health -= mob.getDamage();
+				int dmg = Math.max(0, mob.getDamage() - Armor);
+				System.out.println(mob+" swings at you! Dealing " + dmg + " damage.");
+				Health -= dmg;
 				try {
 					TimeUnit.SECONDS.sleep(1);
 				} catch (InterruptedException e) {
@@ -149,7 +152,7 @@ public class Elysia {
 		
 		if (mob.getHealth() == 0) {
 			SkillPoints += mob.getReward();
-			out("You have won the battle and have been awarded " + mob.getReward() + " skill points!");
+			out("You have won the battle and have been awarded " + mob.getReward() + " skill point(s)!");
 		}
 		
 		isAttacking = false;
@@ -184,7 +187,55 @@ public class Elysia {
 	}
 	
 	public void upgrade() {
+		boolean close = false;
 		
+		System.out.println("-- SKILLS --");
+		System.out.println("[1] > Upgrade damage to "+ (damage+1)+" - 1 SKILL POINT");
+		System.out.println("[2] > Upgrade armor to "+ (Armor+1)+" - 1 SKILL POINT");
+		System.out.println("[3] > Upgrade health to "+ (MaxHealth+25)+" - 1 SKILL POINT");
+
+		
+		while (close == false) {
+			System.out.println("SKILL POINTS : "+ SkillPoints);
+			System.out.println("\nType the number of a skill to upgrade. Type [B] to return to the story.");
+			
+			String[] options = {"1", "2", "3", "b"};
+			String entry = promptUser(options);
+			
+			switch(entry) {
+			case "1":
+				if (SkillPoints >= 1) {
+					SkillPoints--;
+					damage++;
+					out("You have enhanced your damage to " + damage + "!");
+				} else {
+					out("You do not have enough skill points!");
+				}
+				break;
+			case "2":
+				if (SkillPoints >= 1) {
+					SkillPoints--;
+					Armor++;
+					out("You have enhanced your armor to " + Armor + "!");
+				} else {
+					out("You do not have enough skill points!");
+				}
+				break;
+			case "3":
+				if (SkillPoints >= 1) {
+					SkillPoints--;
+					MaxHealth += 25;
+					out("You have enhanced your max health to " + MaxHealth + "!");
+				} else {
+					out("You do not have enough skill points!");
+				}
+				break;
+				
+			case "b":
+				close = true;
+				break;
+			}
+		}
 	}
 	
 	public void GameOver(String deathMessage) {
@@ -209,24 +260,22 @@ public class Elysia {
 		String entry = scan.next();
 		entry = entry.toLowerCase();
 		
-		if (entry == "upgrade") {
+		if (entry.equals("upgrade")) {
 			if (isAttacking == true) {
 				out("You can't upgrade your skills while battling!");
-			}
-			upgrade();
+			} else { upgrade(); }
 		}
 		
 		while (entry.length() != 1) {
-			out("Not a valid command!");
+			out("Please select a valid command!");
 			
 			entry = scan.next();
 			entry = entry.toLowerCase();
 			
-			if (entry == "upgrade") {
+			if (entry.equals("upgrade")) {
 				if (isAttacking == true) {
 					out("You can't upgrade your skills while battling!");
-				}
-				upgrade();
+				} else { upgrade(); }
 			}
 		}
 		
@@ -238,18 +287,22 @@ public class Elysia {
 		String entry = scan.next();
 		entry = entry.toLowerCase();
 		
-		if (entry == "upgrade") {
-			upgrade();
+		if (entry.equals("upgrade")) {
+			if (isAttacking == true) {
+				out("You can't upgrade your skills while battling!");
+			} else { upgrade(); }
 		}
 		
 		while (entry.length() != 1 || !searchArray(args, entry)) {
-			out("Not a valid command!");
+			out("Please select a valid command!");
 			
 			entry = scan.next();
 			entry = entry.toLowerCase();
 			
-			if (entry == "upgrade") {
-				upgrade();
+			if (entry.equals("upgrade")) {
+				if (isAttacking == true) {
+					out("You can't upgrade your skills while battling!");
+				} else { upgrade(); }
 			}
 		}
 		
@@ -421,7 +474,7 @@ public class Elysia {
 						System.out.println();
 						
 						out("Suddenly, you see green eyes opposing you. You quickly unsheath you sword and point it towards it.");
-						Mob goblin = new Mob(10, 1, 1, "Tarzan", "the Rebel Goblin");
+						Mob goblin = new Mob(10, 0, 3, "Tarzan", "the Rebel Goblin", 1);
 						attack(goblin, false);
 						
 					} else {
