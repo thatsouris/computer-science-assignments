@@ -454,6 +454,8 @@ public class Elysia {
 					break;
 				case "d":
 					if (hasTorch == true) {
+						// CORRECT PATHWAY
+						
 						out("You remember that you were given a torch by that SHOPKEEPER! You take it out and strike it across the ground. It\n" +
 								" makes a loud spark sound and you can easily see now. You walk into the forest slowly.");
 						out("The forest looks to have many vines hanging down. The trees on both sides of you look to be maple trees. You hear \n" +
@@ -476,6 +478,31 @@ public class Elysia {
 						out("Suddenly, you see green eyes opposing you. You quickly unsheath you sword and point it towards it.");
 						Mob goblin = new Mob(10, 0, 3, "Tarzan", "the Rebel Goblin", 1);
 						attack(goblin, false);
+						
+						out("Tarzan looks up at you when you are about to give the final blow");
+						speak("tarzan, the rebel goblin", "Why...");
+						out("You hesitate. Think carefully.");
+						out("Do you [k]ill him (+1 SKILL POINT), let him [f]lee, or [q]uestion him?");
+						
+						String[] options_3 = {"k", "f", "q"};
+						String p_3 = promptUser(options_3);
+						
+						switch(p_3) {
+						case "k":
+							SkillPoints++;
+							out("You killed Tarzan with your sword and gained another skill point!");
+							break;
+						case "f":
+							out("You step back and Tarzan scampers away. Leaving a lime green blood trail.");
+							break;
+						case "q":
+							out("He lies there nearly lifeless. You better make this question count.");
+							out("You aim your sword in front of him.");
+							out("[1] > Who are you?");
+							out("[2] > Who do you work for?");
+							out("[3]");
+							break;
+						}
 						
 					} else {
 						out("You scoff at the sign and ignore it. You walk into the forest and you can't even see your boots. You begin to think that this may\n"+
@@ -511,7 +538,7 @@ public class Elysia {
 							break;
 						case "s":
 							out("You equip your sword and you start swinging at the air. You get pushed from behind you onto the ground.");
-							out("You get kicked from all around you and then you get hit with a bat. You die instantly.");
+							out("You get kicked from all around you and then you get hit with a sign. You die instantly.");
 							break;
 						}
 						
