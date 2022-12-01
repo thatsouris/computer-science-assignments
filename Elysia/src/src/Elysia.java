@@ -34,6 +34,7 @@ public class Elysia {
     private boolean isAttacking = false;
     private boolean firstTimeAttacking = true;
     private boolean hasTorch = true;
+    private boolean GameFinished = false;
     
     private Scanner scan = new Scanner(System.in);
     
@@ -192,7 +193,7 @@ public class Elysia {
 		System.out.println("-- SKILLS --");
 		System.out.println("[1] > Upgrade damage to "+ (damage+1)+" - 1 SKILL POINT");
 		System.out.println("[2] > Upgrade armor to "+ (Armor+1)+" - 1 SKILL POINT");
-		System.out.println("[3] > Upgrade health to "+ (MaxHealth+25)+" - 1 SKILL POINT");
+		System.out.println("[3] > Upgrade health to "+ (MaxHealth+5)+" - 1 SKILL POINT");
 
 		
 		while (close == false) {
@@ -224,7 +225,7 @@ public class Elysia {
 			case "3":
 				if (SkillPoints >= 1) {
 					SkillPoints--;
-					MaxHealth += 25;
+					MaxHealth += 5;
 					out("You have enhanced your max health to " + MaxHealth + "!");
 				} else {
 					out("You do not have enough skill points!");
@@ -325,6 +326,7 @@ public class Elysia {
 		out("You are a young warrior and it is your birthday today! It is time for your to embark of \n" +
 		"your journey to slay the goblin clan! You have just turned 18 and with your trusty SWORD,\n" +
 		" you are prepared to take on any enemy!");
+		out("Your mission is to take down the goblin clan that steals and pesters ELYSIA so much.");
 		out("Select a name for your character \n>> ");
 		PlayerName = scan.next().toUpperCase();
 		out("Welcome to Elysia, " + PlayerName + "!");
@@ -479,8 +481,9 @@ public class Elysia {
 						Mob goblin = new Mob(10, 0, 3, "Tarzan", "the Rebel Goblin", 1);
 						attack(goblin, false);
 						
-						out("Tarzan looks up at you when you are about to give the final blow");
-						speak("tarzan, the rebel goblin", "Why...");
+						out("Your torch fizzles out from so much movement.");
+						out("Tarzan looks up at you when you are about to give the final blow.");
+						speak("tarzan", "Why...");
 						out("You hesitate. Think carefully.");
 						out("Do you [k]ill him (+1 SKILL POINT), let him [f]lee, or [q]uestion him?");
 						
@@ -491,16 +494,84 @@ public class Elysia {
 						case "k":
 							SkillPoints++;
 							out("You killed Tarzan with your sword and gained another skill point!");
+							GameOver("Since your torch went out and you have no way of getting back, within the next minute " +
+									"you were killed by a group of goblin guards. You should find a way to let him help you.");
 							break;
 						case "f":
 							out("You step back and Tarzan scampers away. Leaving a lime green blood trail.");
+							GameOver("Since your torch went out and you have no way of getting back, within the next minute " +
+									"you were killed by a group of goblin guards. You should find a way to let him help you.");
 							break;
 						case "q":
 							out("He lies there nearly lifeless. You better make this question count.");
 							out("You aim your sword in front of him.");
 							out("[1] > Who are you?");
-							out("[2] > Who do you work for?");
-							out("[3]");
+							out("[2] > Who do you work for!?");
+							
+							String[] options_4 = {"1", "2"};
+							String p_4 = promptUser(options_4);
+							
+							switch(p_4) {
+							case "1":
+								speak(PlayerName, "Who are you?");
+								out("Tarzan looks up at you");
+								speak("tarzan", "That doesn't matter...");
+								out("Tarzan drops down and dies. You sheath your sword.");
+								GameOver("Since your torch went out and you have no way of getting back, within the next minute " +
+										"you were killed by a group of goblin guards. You should find a way to let him help you.");
+								break;
+							case "2":
+								speak(PlayerName, "Who do you work for!?");
+								speak("tarzan", "I don't work for anyone... I used to work for the fort.");
+								
+								out("You are intrigued that he used to work there.");
+								
+								speak(PlayerName, "Where is the fort!?");
+								speak("tarzan", "I can show you! Just don't kill me!");
+								
+								out("Do you [k]ill him, or do you let him [h]elp you?");
+								
+								String[] options_5 = {"k", "h"};
+								String p_5 = promptUser(options_5);
+								
+								switch(p_5) {
+								case "k":
+									out("You ignore him and straight up kill Tarzan.");
+									GameOver("Since your torch went out and you have no way of getting back, within the next minute " +
+											"you were killed by a group of goblin guards. You should find a way to let him help you.");
+									break;
+								case "h":
+									out("You hold out your hand and you help Tarzan up. You patch him up with the bandages in your pocket.");
+									out("You also bandage yourself you both should be fully healed tomorrow.");
+									speak(PlayerName, "Okay, fine.");
+									speak("Tarzan", "What's you name anyways?");
+									speak(PlayerName, PlayerName+".");
+									speak("Tarzan", "Hm... " + PlayerName+". I'm Tarzan.");
+									
+									System.out.println("-- CHECKPOINT REACHED! --");
+									out("You will be sent back to this time if you lose all of your health!");
+									
+									int CPHealth = Health;
+									int CPMaxHealth = MaxHealth;
+									int CPDamage = damage;
+									int CPArmor = Armor;
+									int CPSP = SkillPoints;
+									
+									while (!GameFinished) { 
+										Health = CPHealth;
+										MaxHealth = CPMaxHealth;
+										damage = CPDamage;
+										Armor = CPArmor;
+										SkillPoints = CPSP;
+										
+										Checkpoint(); 
+									};
+									break;
+								}
+								
+								break;
+							}
+							
 							break;
 						}
 						
@@ -556,6 +627,41 @@ public class Elysia {
 		}
 	}
 	
+	public void Checkpoint() {
+		System.out.println("-- CHECKPOINT REACHED! --");
+		out("You will be sent back to this time if you lose all of your health!");
+		
+		out("You pick up Tazan's sign. You look at it closely.");
+		speak(PlayerName, "A sign? Really? I'm getting you a sword when we come across one.");
+		speak("tarzan", "Oh. Okay.");
+		
+		out("Do you [a]sk him to direct you to the fort or do you [s]ettle for the night?");
+		
+		String[] options_1 = {"a", "s"};
+		String p_1 = promptUser(options_1);
+		
+		switch(p_1) {
+		case "a":
+			break;
+		case "s":
+			Health = MaxHealth;
+			speak(PlayerName, "Well, do you want to settle for the night? You need some rest... and so do I");
+			speak("tarzan", "Alright. We can leave in the morning");
+			
+			out("You fully heal!");
+			out("You and Tarzan set up a small settlement with stray branches and wood. You sleep for the night\n"+
+			"and when you get up, you see Tarzan waiting for you to get up as he looks into the distance. You get\n"+
+			"up and prepare for the journey");
+			break;
+		}
+		
+		speak(PlayerName, "Okay so where is the fort?");
+		speak("tarzan", "Just to towards the path. We need to take a detour to get in though.");
+		speak("tarzan", "I know a weakness.");
+		
+		
+	}
+		
 	public void Town() {
 		out("You look around you. You see a [s]hop, your [h]ouse, and the [w]ilderness. Where should you venture to?");
 		out("NOTE: Once you leave your town, you can't come back! You should prepare before you leave.");
