@@ -1,13 +1,13 @@
 package types;
 
 public class Mob {
-	private int Health = 100;
+	protected int Health = 100;
 	private int MaxHealth = 100;
-	private int Armor = 0;
+	protected int Armor = 0;
 	private int Damage = 0;
 	private int Reward = 0;
 	
-	private String Name;
+	protected String Name;
 	private String Title;
 	
 	public Mob(int maxHealth, int armor, int dmg, String name, String title, int reward) {
@@ -18,6 +18,10 @@ public class Mob {
 		Name = name;
 		Title = title;
 		Reward = reward;
+	}
+	
+	public void setDamage(int dmg) {
+		Damage = dmg;
 	}
 	
 	public int getReward() {
@@ -41,8 +45,11 @@ public class Mob {
 	}
 	
 	
-	public boolean takeDamage(int dmg) {
+	public boolean takeDamage(int dmg, boolean critical) {
 		int dmgTaken = Math.max(0, dmg - Armor);
+		if (critical == true) {
+			dmgTaken = dmg;
+		}
 		Health -= dmgTaken;
 		Health = Math.max(0, Health);
 		
