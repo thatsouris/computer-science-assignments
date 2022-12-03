@@ -199,11 +199,11 @@ public class Elysia {
 		
 		for (int i = 0; i < split.length; i++) {
 			System.out.print(split[i]);
-			//try {
-				//TimeUnit.MILLISECONDS.sleep(10);
-			//} catch (InterruptedException e) {
-			//	e.printStackTrace();
-			//}
+			try {
+				TimeUnit.MILLISECONDS.sleep(10);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
 		
 		System.out.println("\"\n");
