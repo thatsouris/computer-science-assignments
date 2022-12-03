@@ -47,11 +47,7 @@ public class Elysia {
     	
 	public Elysia() { }
 	
-	public boolean attack(Mob mob, boolean mobAttackedFirst) {
-		out("Type [A] to enter battle.");
-		String[] options1 = {"a"};
-		promptUser(options1);
-		
+	public void attack(Mob mob, boolean mobAttackedFirst) {
 		isAttacking = true;
 		System.out.println("--- BATTLE ! ---");
 		out("Attacking: " + mob);
@@ -59,7 +55,7 @@ public class Elysia {
 			firstTimeAttacking = false;
 			out("To attack, you must rotate the arrow by using [A] for counter-clockwise and [D] for clockwise!");
 			out("The arrow needs to be pointing upwards [^] and you type [W] to attack!");
-			out("Each one of your attacks has a 30% chance to be a critical hit (x2 damage)");
+			out("Each one of your attacks has a 10% chance to be a critical hit (x2 damage)");
 			out("This is turn-based combat, meaning that you and your attackee switches turns to attack.");
 		}
 		System.out.println();
@@ -70,7 +66,7 @@ public class Elysia {
 		
 		boolean playersTurn = !mobAttackedFirst;
 		
-		while(mob.getHealth() > 0 && Health > 0) {
+		while(mob.getHealth() >= 0 && Health >= 0) {
 			System.out.println();
 			System.out.println("[ "+PlayerName+" ] - " + Health + "/" + MaxHealth);
 			System.out.println("[ "+mob+" ] - " + mob.getHealth() + "/" + mob.getMaxHealth());
@@ -124,13 +120,13 @@ public class Elysia {
 					case "w":
 						sent = true;
 						if (direction == 3) {
-							boolean crit = ((int) (Math.random() * 100) + 1) <= 30;
+							boolean crit = ((int) (Math.random() * 100) + 1) <= 10;
 							if (crit == false) {
 								int dmgTaken = Math.max(0, damage - mob.getArmor());
 								System.out.println("You hit " + mob + " for " + dmgTaken + " damage!");
 								boolean notDamaged = mob.takeDamage(damage, false);
-								if (notDamaged == true) {
-									out("You didn't harm [ "+mob+" ] because their armor is too high!");
+								if (notDamaged == false) {
+									out("You didn't harm "+mob+" because their armor is too high!");
 								}
 							} else {
 								int dmgTaken = Math.max(0, damage - mob.getArmor());
@@ -162,7 +158,7 @@ public class Elysia {
 				int dmg = Math.max(0, mob.getDamage() - Armor);
 				if (crit == true) {
 					dmg *= 2;
-					System.out.print("[CRITICAL] ");
+					System.out.print("[CRITICAL]" );
 				}
 				System.out.println(mob+" swings at you! Dealing " + dmg + " damage.");
 				Health -= dmg;
@@ -179,7 +175,7 @@ public class Elysia {
 		
 		if (Health <= 0) {
 			GameOver("You have been slain by "+mob+"! Better luck next time!");
-			return false;
+			return;
 		}
 		
 		if (mob.getHealth() == 0) {
@@ -188,7 +184,6 @@ public class Elysia {
 		}
 		
 		isAttacking = false;
-		return true;
 	}
 	
 	public static void speak(String name, String text) {
@@ -199,11 +194,11 @@ public class Elysia {
 		
 		for (int i = 0; i < split.length; i++) {
 			System.out.print(split[i]);
-			//try {
-				//TimeUnit.MILLISECONDS.sleep(10);
-			//} catch (InterruptedException e) {
-			//	e.printStackTrace();
-			//}
+			try {
+				TimeUnit.MILLISECONDS.sleep(10);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
 		
 		System.out.println("\"\n");
@@ -249,7 +244,7 @@ public class Elysia {
 		System.out.println("-- SKILLS --");
 		System.out.println("[1] > Upgrade damage to "+ (damage+1)+" - 1 SKILL POINT");
 		System.out.println("[2] > Upgrade armor to "+ (Armor+1)+" - 1 SKILL POINT");
-		System.out.println("[3] > Upgrade health to "+ (MaxHealth+10)+" - 1 SKILL POINT");
+		System.out.println("[3] > Upgrade health to "+ (MaxHealth+5)+" - 1 SKILL POINT");
 
 		
 		while (close == false) {
@@ -281,7 +276,7 @@ public class Elysia {
 			case "3":
 				if (SkillPoints >= 1) {
 					SkillPoints--;
-					MaxHealth += 10;
+					MaxHealth += 5;
 					out("You have enhanced your max health to " + MaxHealth + "!");
 				} else {
 					out("You do not have enough skill points!");
@@ -309,6 +304,7 @@ public class Elysia {
 				+ "                                                                                          ");
 		
 		System.out.println("\n\n"+deathMessage);
+		
 	}
 	
 	public String promptUser() {
@@ -473,8 +469,8 @@ public class Elysia {
 	}
 	
 	public void Wilderness() {
-		out("You walk into the wilderness, straying from your home town. You hear the bushes rustle from the\n"+ 
-			" wind and you feel the cool air blowing on you. You are surrounded by tall trees and before you is\n"+
+		out("You walk into the wilderness, straying from your home town. You hear the bushes rustle from the"+ 
+			"wind and you feel the cool air blowing on you. You are surrounded by tall trees and before you is"+
 			" a pathway that is seemingly endless.");
 		
 		out("Should you... [b]egin to walk or [g]o back to your town?");
@@ -511,7 +507,7 @@ public class Elysia {
 					out("Since you can't see below you, you step into a dip in the ground by mistake and then tumble\n"
 							+ "down into the water, knocking you out and drowning you.");
 					GameOver("Maybe you should ask some people the whereabouts for your objective?");
-					return;
+					break;
 				case "d":
 					if (hasTorch == true) {
 						// CORRECT PATHWAY
@@ -537,13 +533,12 @@ public class Elysia {
 						
 						out("Suddenly, you see green eyes opposing you. You quickly unsheath you sword and point it towards it.");
 						Mob tarzan = new Mob(10, 0, 3, "Tarzan", "the Rebel Goblin", 1);
-						if(attack(tarzan, false) == false) { return; };
+						attack(tarzan, false);
 						firstTimeAttacking = false;
 						
 						out("Your torch fizzles out from so much movement.");
 						out("Tarzan looks up at you when you are about to give the final blow.");
 						speak("tarzan", "Why...");
-						out("You might as well be dead without a guide.");
 						out("You hesitate. Think carefully.");
 						out("Do you [k]ill him (+1 SKILL POINT), let him [f]lee, or [q]uestion him?");
 						
@@ -556,12 +551,12 @@ public class Elysia {
 							out("You killed Tarzan with your sword and gained another skill point!");
 							GameOver("Since your torch went out and you have no way of getting back, within the next minute " +
 									"you were killed by a group of goblin guards. You should find a way to let him help you.");
-							return;
+							break;
 						case "f":
 							out("You step back and Tarzan scampers away. Leaving a lime green blood trail.");
 							GameOver("Since your torch went out and you have no way of getting back, within the next minute " +
 									"you were killed by a group of goblin guards. You should find a way to let him help you.");
-							return;
+							break;
 						case "q":
 							out("He lies there nearly lifeless. You better make this question count.");
 							out("You aim your sword in front of him.");
@@ -600,7 +595,7 @@ public class Elysia {
 									out("You hold out your hand and you help Tarzan up. You patch him up with the bandages in your pocket.");
 									out("You also bandage yourself you both should be fully healed tomorrow.");
 									speak(PlayerName, "Okay, fine.");
-									speak("Tarzan", "What's your name anyways?");
+									speak("Tarzan", "What's you name anyways?");
 									speak(PlayerName, PlayerName+".");
 									speak("Tarzan", "Hm... " + PlayerName+". I'm Tarzan.");
 									
@@ -667,7 +662,6 @@ public class Elysia {
 						}
 						
 						GameOver("It was a bad idea to disregard signs.");
-						return;
 					}
 					break;
 				}
@@ -714,7 +708,7 @@ public class Elysia {
 		speak("tarzan", "I know a weakness.");
 		
 		out("You and Tarzan venture to the path until you see a group of goblin warriors! It is a group\n"
-				+ "of 4 goblin warriors with 0 armor and 15 health each. They deal 1 damage per hit.");
+				+ "of 4 goblin warriors with 0 armor and 15 health each. They deal one damage per hit.");
 		out("You see the warriors practicing their warcry beside their campfire.");
 		out("Do you [f]ight the warriors or do you [a]void the warriors?");
 		
@@ -733,7 +727,7 @@ public class Elysia {
 			String p_3 = promptUser(options_3);
 			
 			Mob Warrior1 = new Mob(15, 0, 1, "Herbert", "the Royal Assassin", 1);
-			Mob Warrior2 = new Mob(15, 0, 1, "Clete", "the Royal Beserk", 2);
+			Mob Warrior2 = new Mob(15, 0, 2, "Clete", "the Royal Beserk", 2);
 			
 			// Tarzan fights the other two mobs.
 			
@@ -756,10 +750,10 @@ public class Elysia {
 				break;
 			}
 			
-			if(attack(Warrior1, false) == false) { return; };
+			attack(Warrior1, false);
 			out("You look over at Tarzan. He looks like hes pretty good at fighting.");
 			out("Well. Besides the sign.");
-			if(attack(Warrior2, false) == false) { return; };
+			attack(Warrior2, false);
 			
 			out("You and Tarzan looks injured but you two survived. Good job!");
 			out("Remember, you can type \"upgrade\" at any point to upgrade your skills.");
@@ -793,7 +787,6 @@ public class Elysia {
 					out("You gain the ability to parry an attack by 30%!");
 					out("Your damage increases by 1 point!");
 					damage++;
-					canParry = true;
 					break;
 				}
 				
@@ -889,17 +882,17 @@ public class Elysia {
 				out("A sword slices through the barrel straight through your chest!");
 				
 				GameOver("Seems like these guards are prepared for attacks 24/7!");
-				return;
+				break;
 			case "c":
 				out("You step in front of them.");
 				speak(PlayerName, "Face me!");
 				out("They look at eachother and laugh.");
 				
-				Mob guard1 = new Mob(20, 2, 6, "Ying", "the Royal Guard", 2);
-				if (attack(guard1, false) == false) { return; };
+				Mob guard1 = new Mob(20, 2, 2, "Ying", "the Royal Guard", 2);
+				attack(guard1, false);
 				out("The other guard gets angry at his brother's defeat!");
-				Mob guard2 = new Mob(20, 2, 7, "Yang", "the Royal Guard", 2);
-				if (attack(guard2, false) == false) { return; };
+				Mob guard2 = new Mob(20, 2, 3, "Yang", "the Royal Guard", 2);
+				attack(guard2, false);
 				
 				out("You continue through the hall. It seems like its coming to an end.");
 				out("It looks like it leaded to the central castle!");
@@ -912,8 +905,8 @@ public class Elysia {
 			out("You dash forward and look behind you. A giant elf beast drops down in front of you making\n"
 					+ "the ground shake. The mallet drops onto the ground beside it.");
 			out("The gate slams shut behind it!");
-			Mob elf = new Mob(30, 0, 10, "Cicero", "the Hellbeast", 5);
-			if(attack(elf, false) == false) { return; };
+			Mob elf = new Mob(35, 0, 4, "Cicero", "the Hellbeast", 5);
+			attack(elf, true);
 			out("The beast falls onto the ground. You take a breather.");
 			out("You look behind you and you see the central castle's gate wide open. It seems like this is a trap\n"
 					+ "that didn't quite work. Too bad that you were too strong.");
@@ -930,60 +923,62 @@ public class Elysia {
 		out("You might want to upgrade your skills before [c]onfronting her if you haven't already.");
 		
 		String[] options_3 = {"c"};
-		promptUser(options_3);
+		String p_3 = promptUser(options_3);
 		
-		out("Do you sneak up behind her and get an [e]asy kill, or do you speak up and \n"
-				+ "get her to [n]otice you?");
-		
-		Mob lily = new Mob(30, 4, 10, "Lily", "the King's Apprentice", 5);
-		
-		String[] options_4 = {"e", "n"};
+		if (p_3 == "c") {
+			out("Do you sneak up behind her and get an [e]asy kill, or do you speak up and \n"
+					+ "get her to [n]otice you?");
+			
+			Mob lily = new Mob(30, 4, 5, "Lily", "the King's Apprentice", 5);
+			
+			String[] options_4 = {"e", "n"};
 			String p_4 = promptUser(options_4);
-		
-		switch(p_4) {
-		case "e":
-			out("You sneak up behind her and you lift your sword above her.");
-			out("You swing downwards while closing your eyes.");
+			
+			switch(p_4) {
+			case "e":
+				out("You sneak up behind her and you lift your sword above her.");
+				out("You swing downwards while closing your eyes.");
 				out("Suddenly she transforms into gas and teleports behind you! She strikes you from behind!");
-			speak("Lily", "Nice try!", 50);
-			if(attack(lily, true) == false) { return; };
-			break;
-		case "n":
-			speak(PlayerName, "Hey! You!");
-			out("She looks up quickly and stands up.");
-			speak("Lily", "Hello, " + PlayerName + ". I saw you coming.", 50);
-			speak(PlayerName, "Who are you? How do you know my name!?");
-			out("She looks up to you and you instantly feel horrible. You lose a damage point.");
-			damage--;
-			speak("Lily", "You really think the king lets himself be undefended?", 50);
-			speak("Lily", "No!", 100);
-			speak("Lily", "He trains the finest swordsman'! Or perhaps... the finest wizard!", 50);
-			
-			if(attack(lily, false) == false) { return; };
-			out("You feel relieved to live. You get your damage point back.");
-			out("You fall onto the ground and relax for a bit. You take advatage that you are in a training\n"
-					+ "room and you find some bandages and healing potions. You apply them to yourself.");
-			out("You replenish you health!");
-			Health = MaxHealth;
-			damage++;
-			
-			int CPHealth = Health;
-			int CPMaxHealth = MaxHealth;
-			int CPDamage = damage;
-			int CPArmor = Armor;
-			int CPSP = SkillPoints;
-			
-			while (!GameFinished) { 
-				Health = CPHealth;
-				MaxHealth = CPMaxHealth;
-				damage = CPDamage;
-				Armor = CPArmor;
-				SkillPoints = CPSP;
+				speak("Lily", "Nice try!", 50);
+				attack(lily, true);
+				break;
+			case "n":
+				speak(PlayerName, "Hey! You!");
+				out("She looks up quickly and stands up.");
+				speak("Lily", "Hello, " + PlayerName + ". I saw you coming.", 50);
+				speak(PlayerName, "Who are you? How do you know my name!?");
+				out("She looks up to you and you instantly feel horrible. You lose a damage point.");
+				damage--;
+				speak("Lily", "You really think the king lets himself be undefended?", 50);
+				speak("Lily", "No!", 100);
+				speak("Lily", "He trains the finest swordsman'! Or perhaps... the finest wizard!", 50);
 				
-				FinalCheckpoint(); 
-			};
-			
-			break;
+				attack(lily, false);
+				out("You feel relieved to live. You get your damage point back.");
+				out("You fall onto the ground and relax for a bit. You take advatage that you are in a training\n"
+						+ "room and you find some bandages and healing potions. You apply them to yourself.");
+				out("You replenish you health!");
+				Health = MaxHealth;
+				damage++;
+				
+				int CPHealth = Health;
+				int CPMaxHealth = MaxHealth;
+				int CPDamage = damage;
+				int CPArmor = Armor;
+				int CPSP = SkillPoints;
+				
+				while (!GameFinished) { 
+					Health = CPHealth;
+					MaxHealth = CPMaxHealth;
+					damage = CPDamage;
+					Armor = CPArmor;
+					SkillPoints = CPSP;
+					
+					FinalCheckpoint(); 
+				};
+				
+				break;
+			}
 		}
 	}
 	
@@ -1019,98 +1014,8 @@ public class Elysia {
 		speak("???", "You...", 300);
 		speak("Tarzan", "Shall not stand.", 300);
 		
-		Mob tarzan = new King(50, 5, 15, "Tarzan", "the Tyrant", 10);
-		if (attack(tarzan, true) == false) { return; };
-		
-		out("Tarzan rolls to the ground and looks up to you. Confused of how you beat him.");
-		speak("Tarzan", "How...", 300);
-		
-		out("Do you tell him to [s]pare Elysia or do you [k]ill him?");
-		out("Think carefully...");
-		
-		String[] options_2 = {"s", "k"};
-		String p_2 = promptUser(options_2);
-		
-		switch(p_2) {
-		case "s":
-			out("Once again, you hold out your hand. Tarzan grabs it and you help him up.");
-			speak("Tarzan", "Thanks loser...", 200);
-			speak(PlayerName, "I want you to stop attacking Elysia. Spare my people.");
-			speak("Tarzan", "Okay fine.", 200);
-			out("Tarzan rolls his eyes.");
-			speak("Tarzan", "I'll retreat my forces.", 200);
-			
-			out("Tarzan takes a knee next to you.");
-			
-			System.out.println("\n___________________________________________________________\n\n");
-			
-			out("And with that... Tarzan, the Tyrant of the evil goblin clan was influenced by your actions\n"
-			+ "and retreated from Elysia, saving your people. Tarzan soon began to rebuild his empire from\n"
-			+ "the ground up, invoking ethically correct order instead of a dictatorship. Elysia and Tarzan's\n"
-			+ "clan joined one another and granted humans and goblins as equal.\n\n");
-			
-			out("Years in the future, but not many... You become the leader and mayor of Elysia after saving it\n"
-			+ " you become a well known fighter around the globe. Tarzan is now an insiring leader of his own\n"
-			+ "town. While paired with his army, you two become an unstoppable force, allowing both of your towns\n"
-			+ "to become immune to any other.\n\n");
-			
-			out("Well done, "+PlayerName+"!");
-			System.out.println(" __     __          __          ___       _ \r\n"
-					+ " \\ \\   / /          \\ \\        / (_)     | |\r\n"
-					+ "  \\ \\_/ /__  _   _   \\ \\  /\\  / / _ _ __ | |\r\n"
-					+ "   \\   / _ \\| | | |   \\ \\/  \\/ / | | '_ \\| |\r\n"
-					+ "    | | (_) | |_| |    \\  /\\  /  | | | | |_|\r\n"
-					+ "    |_|\\___/ \\__,_|     \\/  \\/   |_|_| |_(_)\r\n"
-					+ "                                            \r\n"
-					+ "                                            ");
-			
-			out("Final stats:");
-			System.out.println("Max Health : "+ MaxHealth);
-			System.out.println("Armor : "+ Armor);
-			System.out.println("Damage : "+ damage);
-			System.out.println("Skill points : "+ SkillPoints);
-			System.out.println("Ending Achieved: GOOD ENDING");
-			
-			System.out.println("\nThanks for playing!");
-			break;
-		case "k":
-			speak(PlayerName, "I can't let you live, tyrant.");
-			out("You raise your sword and you kill him with a fatal blow. You drop it beside you. You have done it.");
-			out("You have saved Elysia. You drop to your knees with hope for Elysia.");
-			
-			System.out.println("\n___________________________________________________________\n\n");
-			
-			out("And with that... Tarzan, the Tyrant was slain due to your actions and his army was left without\n"
-			+ "a leader. The goblin clan was disbanded and Elysia rose supreme. You rose to take on the mayor role\n"
-			+ "due to your heroic actions.\n\n");
-			
-			out("Years in the future, but not many... Elysia fell from having an insecure army. There was always\n"
-				+ "another enemy around the corner. You now live as an outcast from Elysia who loots settlements and\n"
-				+ "is known to be a mysterious figure around the globe. The warrior who slayed the controlling tyrant.\n\n");
-			
-			out("Well done, "+PlayerName+"!");
-			System.out.println(" __     __          __          ___       _ \r\n"
-					+ " \\ \\   / /          \\ \\        / (_)     | |\r\n"
-					+ "  \\ \\_/ /__  _   _   \\ \\  /\\  / / _ _ __ | |\r\n"
-					+ "   \\   / _ \\| | | |   \\ \\/  \\/ / | | '_ \\| |\r\n"
-					+ "    | | (_) | |_| |    \\  /\\  /  | | | | |_|\r\n"
-					+ "    |_|\\___/ \\__,_|     \\/  \\/   |_|_| |_(_)\r\n"
-					+ "                                            \r\n"
-					+ "                                            ");
-			
-			out("Final stats:");
-			System.out.println("Max Health : "+ MaxHealth);
-			System.out.println("Armor : "+ Armor);
-			System.out.println("Damage : "+ damage);
-			System.out.println("Skill points : "+ SkillPoints);
-			System.out.println("Ending Achieved: UNFORTUNATE ENDING");
-			
-			System.out.println("\nThanks for playing!");
-			
-			break;
-		}
-		
-		GameFinished = true;
+		Mob tarzan = new King(50, 5, 10, "Tarzan", "the Tyrant", 10);
+		attack(tarzan, true);
 	}
 	
 	public void Town() {
